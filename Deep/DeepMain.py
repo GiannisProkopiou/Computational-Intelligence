@@ -1,4 +1,5 @@
-from DeepHelpers import get_emdeding_data, make_clean_dataset, Read_Two_Column_File, evaluate_model, get_scaled_data, new_vocab
+from DeepHelpers import get_emdeding_data, make_clean_dataset, Read_Two_Column_File, evaluate_model, get_scaled_data, \
+    new_vocab, get_y
 from DeepModels import get_embedding_model, get_model
 import numpy as np
 from keras.preprocessing.sequence import pad_sequences
@@ -9,10 +10,10 @@ def main():
     #A.1
 
     # read the vocabulary and the indexes
-    vocabulary, indexes = Read_Two_Column_File('Data/vocabs.txt')
+    # vocabulary, indexes = Read_Two_Column_File('Data/vocabs.txt')
 
     # new vocab
-    most_important_words = np.load("best_sol.npy", allow_pickle=True)
+    most_important_words = np.load("Data/best_sol.npy", allow_pickle=True)
     vocabulary = new_vocab(most_important_words)
 
     # make a clean dataset
@@ -26,43 +27,26 @@ def main():
     X_train = np.array(X_train)
     X_test = np.array(X_test)
 
-    # X_train_embedding, maxlen_train_embedding = get_emdeding_data('Data/train-data-cleaned.dat')
-    # X_test_embedding, max_len_test_embedding = get_emdeding_data('Data/test-data-cleaned.dat')
+    # X_train_embedding, maxlen_train_embedding = get_emdeding_data('Data/train-data-cleaned.dat', vocabulary)
+    # X_test_embedding, max_len_test_embedding = get_emdeding_data('Data/test-data-cleaned.dat', vocabulary)
     #
     # X_train_embedding = np.array(pad_sequences(X_train_embedding, padding='post', maxlen=maxlen_train_embedding))
     # X_test_embedding = np.array(pad_sequences(X_test_embedding, padding='post', maxlen=maxlen_train_embedding))
 
+    y_test, y_train = get_y()
 
-    # get the labels
-    y_train = []
-    with open('Data/train-label.dat', 'r') as train_labels:
-        for line in train_labels:
-            line = line.split("\n")[0]
-            elems = [int(elem) for elem in line.split(' ')]
-            y_train.append(np.array(elems))
-
-    y_test = []
-    with open('Data/test-label.dat', 'r') as test_labels:
-        for line in test_labels:
-            line = line.split("\n")[0]
-            elems = [int(elem) for elem in line.split(' ')]
-            y_test.append(np.array(elems))
-
-    y_test = np.array(y_test)
-    y_train = np.array(y_train)
-
-
-    # d)
     lr = 1e-3
     m = 0.6
     l2 = 0.5
+
+    # d)
     n_inputs, n_outputs = X_train.shape[1], y_train.shape[1]
     model = get_model(n_inputs, n_outputs, lr, m, l2)
     evaluate_model(X_train, y_train, X_test, y_test, model)
 
     #A.5 - Bonus
     # n_inputs, n_outputs = X_train_embedding.shape[1], y_train.shape[1]
-    # model = get_embedding_model(maxlen_train_embedding, n_inputs, n_outputs, 0.001, 0.6, 0.9)
+    # model = get_embedding_model(maxlen_train_embedding, len(vocabulary), n_outputs, lr, m)
     # evaluate_model(X_train_embedding, y_train, X_test_embedding, y_test, model)
 
 

@@ -84,7 +84,7 @@ def get_scaled_data(dataset, vocabulary, scale='standard'):
     return X, maxlen
 
 
-def get_emdeding_data(dataset):
+def get_emdeding_data(dataset, vocabulary):
 
     X = []
     maxlen = 0
@@ -92,7 +92,7 @@ def get_emdeding_data(dataset):
     with open(f'{dataset}', 'r') as data_cleaned:
         for line in data_cleaned:
             line = line.split('\n')[0]
-            words = [int(word) for word in line.split(' ')[1:]]
+            words = [int(word) for word in line.split(' ')[1:] if word in vocabulary]
             X.append(words)
 
             length = len(line.split(' ')[1:])
@@ -107,6 +107,28 @@ def new_vocab(most_important_words):
 
     indices = [i for i, x in enumerate(most_important_words.tolist()) if x == 1]
     return indices
+
+
+def get_y(train_labels_file='Data/train-label.dat', test_bales_file='Data/test-label.dat'):
+    # get the labels
+    y_train = []
+    with open(train_labels_file, 'r') as train_labels:
+        for line in train_labels:
+            line = line.split("\n")[0]
+            elems = [int(elem) for elem in line.split(' ')]
+            y_train.append(np.array(elems))
+
+    y_test = []
+    with open(test_bales_file, 'r') as test_labels:
+        for line in test_labels:
+            line = line.split("\n")[0]
+            elems = [int(elem) for elem in line.split(' ')]
+            y_test.append(np.array(elems))
+
+    y_test = np.array(y_test)
+    y_train = np.array(y_train)
+
+    return y_test, y_train
 
 
 # evaluate a model using repeated k-fold cross-validation

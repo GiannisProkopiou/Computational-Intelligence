@@ -27,7 +27,7 @@ def get_embedding_model(maxlen_train_embedding, input_dim, output_shape, lr, m):
 
     model = keras.Sequential()
     model.add(keras.Input(shape=(maxlen_train_embedding,)))
-    model.add(keras.layers.Embedding(input_dim=8520, output_dim=64))
+    model.add(keras.layers.Embedding(input_dim=input_dim, output_dim=64))
     model.add(layers.LSTM(128, return_sequences=True))
     model.add(keras.layers.Dropout(0.2))
     model.add(keras.layers.LSTM(64))

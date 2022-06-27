@@ -106,6 +106,9 @@ def fitness(atom,  vocabulary, tfidf_score_dict, corpus_len):
             fitness_score += tfidf_score_dict[word_in_atom] / corpus_len
 
     # penalty with respect to the score and number of words
-    penalty = (fitness_score / word_counter) * 1000
+    if word_counter > 1000:
+        penalty = ((word_counter - 1000) / 7520) * fitness_score
 
     return fitness_score - penalty
+
+
